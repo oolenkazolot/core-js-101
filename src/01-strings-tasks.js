@@ -234,7 +234,7 @@ function getRectangleString(width, height) {
  *    => 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm'
  *
  */
-function encodeToRot13(/*str*/) {
+function encodeToRot13(/* str */) {
   // const arr = str.split('');
   // const alf = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   // const a = arr.map((item) => {
