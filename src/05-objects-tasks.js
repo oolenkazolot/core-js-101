@@ -54,8 +54,13 @@ function getJSON(obj) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const jsonObject = JSON.parse(json);
+  const properties = {};
+  Object.entries(jsonObject).forEach((element) => {
+    properties[element[0]] = { value: element[1], enumerable: true };
+  });
+  return Object.create(proto, properties);
 }
 
 /**
@@ -113,32 +118,106 @@ function fromJSON(/* proto, json */) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  thisElement: '',
+  thisId: '',
+  thisClass: '',
+  thisAttr: '',
+  thisPseudoClass: '',
+  thisPseudoElement: '',
+  errorMessage:
+    'Element, id and pseudo-element should not occur more then one time inside the selector',
+  errorMessage1:
+    'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+
+  stringify() {
+    return (
+      this.thisElement
+      + this.thisId
+      + this.thisClass
+      + this.thisAttr
+      + this.thisPseudoClass
+      + this.thisPseudoElement
+    );
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    if (this.thisElement) {
+      throw new Error(this.errorMessage);
+    }
+    if (
+      [
+        'thisId',
+        'thisClass',
+        'thisAttr',
+        'thisPseudoClass',
+        'thisPseudoElement',
+      ].some((e) => this[e])
+    ) {
+      throw new Error(this.errorMessage1);
+    }
+    const obj = Object.create(this);
+    obj.thisElement = value;
+    return obj;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    if (this.thisId) {
+      throw new Error(this.errorMessage);
+    }
+    if (
+      ['thisClass', 'thisAttr', 'thisPseudoClass', 'thisPseudoElement'].some(
+        (e) => this[e],
+      )
+    ) {
+      throw new Error(this.errorMessage1);
+    }
+    const obj = Object.create(this);
+    obj.thisId = `#${value}`;
+    return obj;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    if (
+      ['thisAttr', 'thisPseudoClass', 'thisPseudoElement'].some((e) => this[e])
+    ) {
+      throw new Error(this.errorMessage1);
+    }
+    const obj = Object.create(this);
+    obj.thisClass += `.${value}`;
+    return obj;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    if (['thisPseudoClass', 'thisPseudoElement'].some((e) => this[e])) {
+      throw new Error(this.errorMessage1);
+    }
+    const obj = Object.create(this);
+    obj.thisAttr = `[${value}]`;
+    return obj;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    if (['thisPseudoElement'].some((e) => this[e])) {
+      throw new Error(this.errorMessage1);
+    }
+    const obj = Object.create(this);
+    obj.thisPseudoClass += `:${value}`;
+    return obj;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    if (this.thisPseudoElement) {
+      throw new Error(this.errorMessage);
+    }
+    const obj = Object.create(this);
+    obj.thisPseudoElement = `::${value}`;
+    return obj;
+  },
+
+  combine(selector1, combinator, selector2) {
+    const obj = Object.create(cssSelectorBuilder);
+    obj.stringify = () => `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    return obj;
   },
 };
 
