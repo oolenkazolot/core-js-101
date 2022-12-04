@@ -234,21 +234,22 @@ function getRectangleString(width, height) {
  *    => 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm'
  *
  */
-function encodeToRot13(/* str */) {
-  // const arr = str.split('');
-  // const alf = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  // const a = arr.map((item) => {
-  //   const indexLetter = alf.indexOf(item);
-  //   if (indexLetter === -1) {
-  //     return item;
-  //   }
-  //   if (alf[indexLetter + 13]) {
-  //     return alf[indexLetter + 13];
-  //   }
-  //   return alf[indexLetter - 13];
-  // });
-  // return a.join('');
-  throw new Error('Not implemented');
+function encodeToRot13(str) {
+  const arr = str.split('');
+  const res = arr.map((item) => {
+    const alphabet = item === item.toUpperCase()
+      ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      : 'abcdefghijklmnopqrstuvwxyz';
+    const indexLetter = alphabet.indexOf(item);
+    if (indexLetter === -1) {
+      return item;
+    }
+    if (alphabet[indexLetter + 13]) {
+      return alphabet[indexLetter + 13];
+    }
+    return alphabet[indexLetter - 13];
+  });
+  return res.join('');
 }
 
 /**
